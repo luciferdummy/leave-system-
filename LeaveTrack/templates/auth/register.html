@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% block title %}Register - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center py-5">
+            <div class="col-lg-8 col-md-10">
+                <div class="auth-card animate__animated animate__fadeInUp">
+                    <div class="auth-header text-center mb-4">
+                        <div class="auth-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <h2 class="fw-bold">Create Account</h2>
+                        <p class="text-muted">Register for leave management system</p>
+                    </div>
+                    
+                    <form method="POST" id="registerForm" class="needs-validation" novalidate>
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.employee_id(class="form-control", placeholder="Employee ID", required=True) }}
+                                    <label for="{{ form.employee_id.id }}">
+                                        <i class="fas fa-id-card me-2"></i>Employee ID
+                                    </label>
+                                    {% if form.employee_id.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.employee_id.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.email(class="form-control", placeholder="Email", required=True) }}
+                                    <label for="{{ form.email.id }}">
+                                        <i class="fas fa-envelope me-2"></i>Email Address
+                                    </label>
+                                    {% if form.email.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.email.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.first_name(class="form-control", placeholder="First Name", required=True) }}
+                                    <label for="{{ form.first_name.id }}">
+                                        <i class="fas fa-user me-2"></i>First Name
+                                    </label>
+                                    {% if form.first_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.first_name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.last_name(class="form-control", placeholder="Last Name", required=True) }}
+                                    <label for="{{ form.last_name.id }}">
+                                        <i class="fas fa-user me-2"></i>Last Name
+                                    </label>
+                                    {% if form.last_name.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.last_name.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.password(class="form-control", placeholder="Password", required=True) }}
+                                    <label for="{{ form.password.id }}">
+                                        <i class="fas fa-lock me-2"></i>Password
+                                    </label>
+                                    <button type="button" class="password-toggle" id="togglePassword">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if form.password.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.password.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.password2(class="form-control", placeholder="Confirm Password", required=True) }}
+                                    <label for="{{ form.password2.id }}">
+                                        <i class="fas fa-lock me-2"></i>Confirm Password
+                                    </label>
+                                    <button type="button" class="password-toggle" id="togglePassword2">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if form.password2.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.password2.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.department(class="form-control", placeholder="Department", required=True) }}
+                                    <label for="{{ form.department.id }}">
+                                        <i class="fas fa-building me-2"></i>Department
+                                    </label>
+                                    {% if form.department.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.department.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.designation(class="form-control", placeholder="Designation", required=True) }}
+                                    <label for="{{ form.designation.id }}">
+                                        <i class="fas fa-briefcase me-2"></i>Designation
+                                    </label>
+                                    {% if form.designation.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.designation.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.staff_type(class="form-select", required=True) }}
+                                    <label for="{{ form.staff_type.id }}">
+                                        <i class="fas fa-users me-2"></i>Staff Type
+                                    </label>
+                                    {% if form.staff_type.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.staff_type.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-floating mb-3">
+                                    {{ form.phone(class="form-control", placeholder="Phone Number") }}
+                                    <label for="{{ form.phone.id }}">
+                                        <i class="fas fa-phone me-2"></i>Phone Number (Optional)
+                                    </label>
+                                    {% if form.phone.errors %}
+                                        <div class="invalid-feedback d-block">
+                                            {% for error in form.phone.errors %}
+                                                {{ error }}
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-floating mb-4">
+                            {{ form.address(class="form-control", placeholder="Address", style="height: 100px") }}
+                            <label for="{{ form.address.id }}">
+                                <i class="fas fa-map-marker-alt me-2"></i>Address (Optional)
+                            </label>
+                            {% if form.address.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.address.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg animate-btn" id="registerBtn">
+                                <span class="btn-text">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </span>
+                                <span class="btn-loading d-none">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    Creating Account...
+                                </span>
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="auth-footer text-center mt-4">
+                        <p class="text-muted">
+                            Already have an account? 
+                            <a href="{{ url_for('auth.login') }}" class="text-primary fw-semibold">Sign in here</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const registerBtn = document.getElementById('registerBtn');
+    
+    // Password toggle functionality
+    function setupPasswordToggle(toggleId, fieldId) {
+        const toggle = document.getElementById(toggleId);
+        const field = document.getElementById(fieldId);
+        
+        toggle.addEventListener('click', function() {
+            const type = field.type === 'password' ? 'text' : 'password';
+            field.type = type;
+            
+            const icon = this.querySelector('i');
+            icon.className = type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        });
+    }
+    
+    setupPasswordToggle('togglePassword', 'password');
+    setupPasswordToggle('togglePassword2', 'password2');
+    
+    // Form submission with loading state
+    form.addEventListener('submit', function(e) {
+        if (form.checkValidity()) {
+            registerBtn.querySelector('.btn-text').classList.add('d-none');
+            registerBtn.querySelector('.btn-loading').classList.remove('d-none');
+            registerBtn.disabled = true;
+        }
+    });
+    
+    // Enhanced form validation
+    const inputs = form.querySelectorAll('input, select, textarea');
+    inputs.forEach((input, index) => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+        
+        // Animate form fields on scroll
+        setTimeout(() => {
+            input.parentElement.classList.add('animate__animated', 'animate__fadeInUp');
+        }, index * 50);
+    });
+    
+    function validateField(field) {
+        if (field.checkValidity()) {
+            field.classList.add('is-valid');
+            field.classList.remove('is-invalid');
+            
+            // Add success animation
+            field.parentElement.classList.add('animate__animated', 'animate__pulse');
+            setTimeout(() => {
+                field.parentElement.classList.remove('animate__animated', 'animate__pulse');
+            }, 1000);
+        } else {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+            
+            // Add error animation
+            field.parentElement.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                field.parentElement.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
+        }
+    }
+    
+    // Password strength indicator
+    const passwordField = document.getElementById('password');
+    const confirmPasswordField = document.getElementById('password2');
+    
+    passwordField.addEventListener('input', function() {
+        checkPasswordStrength(this.value);
+    });
+    
+    confirmPasswordField.addEventListener('input', function() {
+        checkPasswordMatch();
+    });
+    
+    function checkPasswordStrength(password) {
+        // Basic password strength check
+        let strength = 0;
+        if (password.length >= 6) strength++;
+        if (password.match(/[a-z]/)) strength++;
+        if (password.match(/[A-Z]/)) strength++;
+        if (password.match(/[0-9]/)) strength++;
+        if (password.match(/[^a-zA-Z0-9]/)) strength++;
+        
+        // Visual feedback could be added here
+    }
+    
+    function checkPasswordMatch() {
+        const password = passwordField.value;
+        const confirmPassword = confirmPasswordField.value;
+        
+        if (password && confirmPassword) {
+            if (password === confirmPassword) {
+                confirmPasswordField.classList.add('is-valid');
+                confirmPasswordField.classList.remove('is-invalid');
+            } else {
+                confirmPasswordField.classList.add('is-invalid');
+                confirmPasswordField.classList.remove('is-valid');
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

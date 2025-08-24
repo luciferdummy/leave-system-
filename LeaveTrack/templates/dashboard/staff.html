@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Dashboard - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-section">
+    <div class="container py-4">
+        <!-- Welcome Header -->
+        <div class="dashboard-header mb-4 animate__animated animate__fadeInDown">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="display-6 fw-bold mb-2">
+                        Welcome back, {{ current_user.first_name }}!
+                    </h1>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user-tag me-2"></i>{{ current_user.designation }} - {{ current_user.department }}
+                    </p>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('leave.apply') }}" class="btn btn-primary btn-lg animate-btn">
+                        <i class="fas fa-plus-circle me-2"></i>Apply for Leave
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card animate__animated animate__fadeInUp">
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_allocated }}</h3>
+                        <p class="stat-label">Total Allocated</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                    <div class="stat-icon bg-success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_used }}</h3>
+                        <p class="stat-label">Days Used</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_pending }}</h3>
+                        <p class="stat-label">Pending Days</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                    <div class="stat-icon bg-info">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_available }}</h3>
+                        <p class="stat-label">Available Days</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Balance Breakdown -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="dashboard-card animate__animated animate__fadeInLeft">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-chart-pie me-2"></i>Leave Balance Breakdown
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if stats.by_type %}
+                            {% for leave_type, balance in stats.by_type.items() %}
+                            <div class="leave-balance-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="mb-0">{{ leave_type }}</h6>
+                                    <span class="badge" style="background-color: {{ balance.color }};">
+                                        {{ balance.available }}/{{ balance.allocated }} days
+                                    </span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar" 
+                                         style="width: {{ ((balance.allocated - balance.available) / balance.allocated * 100) if balance.allocated > 0 else 0 }}%; background-color: {{ balance.color }};"
+                                         role="progressbar"></div>
+                                </div>
+                                <div class="d-flex justify-content-between text-muted small mt-1">
+                                    <span>Used: {{ balance.used }} days</span>
+                                    <span>Pending: {{ balance.pending }} days</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-calendar-times text-muted fa-3x mb-3"></i>
+                                <p class="text-muted">No leave balance data available.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="dashboard-card animate__animated animate__fadeInRight">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-calendar-week me-2"></i>Upcoming Leaves
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if upcoming_leaves %}
+                            {% for leave in upcoming_leaves %}
+                            <div class="upcoming-leave-item mb-3">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ leave.leave_type.name }}</h6>
+                                        <p class="text-muted small mb-0">
+                                            {{ leave.start_date.strftime('%b %d') }} - {{ leave.end_date.strftime('%b %d, %Y') }}
+                                        </p>
+                                    </div>
+                                    <span class="badge bg-success">{{ leave.total_days }} days</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-calendar-check text-muted fa-3x mb-3"></i>
+                                <p class="text-muted">No upcoming leaves scheduled.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card animate__animated animate__fadeInUp">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-history me-2"></i>Recent Applications
+                        </h5>
+                        <a href="{{ url_for('leave.history') }}" class="btn btn-outline-primary btn-sm">
+                            View All <i class="fas fa-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_applications %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Leave Type</th>
+                                            <th>Dates</th>
+                                            <th>Days</th>
+                                            <th>Status</th>
+                                            <th>Applied On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in recent_applications %}
+                                        <tr class="application-row animate-on-scroll">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="status-indicator me-2" style="background-color: {{ application.leave_type.color_code }};"></div>
+                                                    {{ application.leave_type.name }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ application.start_date.strftime('%b %d') }} - 
+                                                {{ application.end_date.strftime('%b %d, %Y') }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">{{ application.total_days }} days</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-{{ application.status_color }}">
+                                                    {{ application.status|title }}
+                                                </span>
+                                            </td>
+                                            <td>{{ application.applied_at.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                {% if application.status == 'pending' %}
+                                                    <a href="{{ url_for('leave.cancel', application_id=application.id) }}" 
+                                                       class="btn btn-outline-danger btn-sm"
+                                                       onclick="return confirm('Are you sure you want to cancel this application?')">
+                                                        <i class="fas fa-times"></i>
+                                                    </a>
+                                                {% else %}
+                                                    <span class="text-muted">-</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-file-alt text-muted fa-4x mb-3"></i>
+                                <h5 class="text-muted">No Applications Found</h5>
+                                <p class="text-muted">You haven't submitted any leave applications yet.</p>
+                                <a href="{{ url_for('leave.apply') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle me-2"></i>Apply for Leave
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

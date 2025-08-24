@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Leave Types - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="leave-types-section">
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="page-header mb-4 animate__animated animate__fadeInDown">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="display-6 fw-bold mb-2">
+                        <i class="fas fa-tags me-3"></i>Leave Types Management
+                    </h1>
+                    <p class="text-muted mb-0">Configure and manage different types of leave</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Add/Edit Leave Type Form -->
+            <div class="col-lg-5">
+                <div class="form-card animate__animated animate__fadeInLeft">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Leave Type
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" id="leaveTypeForm" class="needs-validation" novalidate>
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.name(class="form-control", placeholder="Leave Type Name", required=True) }}
+                                <label for="{{ form.name.id }}">
+                                    <i class="fas fa-tag me-2"></i>Leave Type Name
+                                </label>
+                                {% if form.name.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.name.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.description(class="form-control", placeholder="Description", style="height: 100px") }}
+                                <label for="{{ form.description.id }}">
+                                    <i class="fas fa-info-circle me-2"></i>Description (Optional)
+                                </label>
+                                {% if form.description.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.description.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.max_days_per_year(class="form-control", placeholder="Maximum Days Per Year", min="0", max="365") }}
+                                <label for="{{ form.max_days_per_year.id }}">
+                                    <i class="fas fa-calendar-alt me-2"></i>Maximum Days Per Year
+                                </label>
+                                {% if form.max_days_per_year.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.max_days_per_year.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-palette me-2"></i>Color Code
+                                </label>
+                                <div class="color-picker-container">
+                                    {{ form.color_code(class="form-control form-control-color", style="height: 50px") }}
+                                    <div class="color-presets mt-2">
+                                        <span class="color-preset" data-color="#007bff" style="background-color: #007bff;"></span>
+                                        <span class="color-preset" data-color="#28a745" style="background-color: #28a745;"></span>
+                                        <span class="color-preset" data-color="#dc3545" style="background-color: #dc3545;"></span>
+                                        <span class="color-preset" data-color="#ffc107" style="background-color: #ffc107;"></span>
+                                        <span class="color-preset" data-color="#6f42c1" style="background-color: #6f42c1;"></span>
+                                        <span class="color-preset" data-color="#fd7e14" style="background-color: #fd7e14;"></span>
+                                        <span class="color-preset" data-color="#20c997" style="background-color: #20c997;"></span>
+                                        <span class="color-preset" data-color="#6c757d" style="background-color: #6c757d;"></span>
+                                    </div>
+                                </div>
+                                {% if form.color_code.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.color_code.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-check-group mb-3">
+                                <label class="form-label">Requirements</label>
+                                <div class="form-check">
+                                    {{ form.requires_medical_certificate(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.requires_medical_certificate.id }}">
+                                        <i class="fas fa-file-medical me-2"></i>
+                                        Requires Medical Certificate
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-check-group mb-4">
+                                <label class="form-label">Applicable To</label>
+                                <div class="form-check">
+                                    {{ form.applicable_to_teaching(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.applicable_to_teaching.id }}">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>
+                                        Teaching Staff
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    {{ form.applicable_to_non_teaching(class="form-check-input") }}
+                                    <label class="form-check-label" for="{{ form.applicable_to_non_teaching.id }}">
+                                        <i class="fas fa-user-tie me-2"></i>
+                                        Non-Teaching Staff
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg animate-btn" id="submitBtn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-plus-circle me-2"></i>Add Leave Type
+                                    </span>
+                                    <span class="btn-loading d-none">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                        Creating...
+                                    </span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Existing Leave Types -->
+            <div class="col-lg-7">
+                <div class="leave-types-list-card animate__animated animate__fadeInRight">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-list me-2"></i>Existing Leave Types
+                            {% if leave_types %}
+                                <span class="badge bg-primary ms-2">{{ leave_types|length }}</span>
+                            {% endif %}
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if leave_types %}
+                            <div class="leave-types-grid">
+                                {% for leave_type in leave_types %}
+                                <div class="leave-type-card animate-on-scroll" data-leave-type-id="{{ leave_type.id }}">
+                                    <div class="leave-type-header">
+                                        <div class="d-flex align-items-center">
+                                            <div class="leave-type-color-indicator me-3" 
+                                                 style="background-color: {{ leave_type.color_code }};"></div>
+                                            <div class="flex-grow-1">
+                                                <h6 class="leave-type-name mb-1">{{ leave_type.name }}</h6>
+                                                {% if leave_type.description %}
+                                                    <p class="leave-type-description text-muted mb-0">{{ leave_type.description }}</p>
+                                                {% endif %}
+                                            </div>
+                                            <div class="leave-type-actions">
+                                                <button class="btn btn-sm btn-outline-secondary" 
+                                                        onclick="editLeaveType({{ leave_type.id }})" 
+                                                        title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" 
+                                                        onclick="deleteLeaveType({{ leave_type.id }})" 
+                                                        title="Delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="leave-type-details">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="detail-item">
+                                                    <small class="text-muted">Max Days/Year</small>
+                                                    <div class="fw-semibold">{{ leave_type.max_days_per_year }} days</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="detail-item">
+                                                    <small class="text-muted">Medical Cert.</small>
+                                                    <div>
+                                                        {% if leave_type.requires_medical_certificate %}
+                                                            <span class="badge bg-warning">Required</span>
+                                                        {% else %}
+                                                            <span class="badge bg-light text-dark">Not Required</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="applicable-staff mt-2">
+                                            <small class="text-muted">Applicable to:</small>
+                                            <div class="mt-1">
+                                                {% if leave_type.applicable_to_teaching %}
+                                                    <span class="badge bg-primary me-1">Teaching</span>
+                                                {% endif %}
+                                                {% if leave_type.applicable_to_non_teaching %}
+                                                    <span class="badge bg-info">Non-Teaching</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="empty-state">
+                                <div class="text-center py-5">
+                                    <i class="fas fa-tags text-muted fa-4x mb-3"></i>
+                                    <h5 class="text-muted">No Leave Types Configured</h5>
+                                    <p class="text-muted">Add your first leave type to get started with leave management.</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Default Leave Types Suggestion -->
+        <div class="suggestions-card mt-4 animate__animated animate__fadeInUp">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="fas fa-lightbulb me-2"></i>Common Leave Types Suggestions
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="suggestion-item" onclick="applySuggestion('Sick Leave', 'Leave for medical reasons', 12, '#dc3545', true)">
+                            <div class="suggestion-color" style="background-color: #dc3545;"></div>
+                            <div class="suggestion-content">
+                                <div class="fw-semibold">Sick Leave</div>
+                                <small class="text-muted">12 days/year</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="suggestion-item" onclick="applySuggestion('Casual Leave', 'Personal and emergency leave', 15, '#007bff', false)">
+                            <div class="suggestion-color" style="background-color: #007bff;"></div>
+                            <div class="suggestion-content">
+                                <div class="fw-semibold">Casual Leave</div>
+                                <small class="text-muted">15 days/year</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="suggestion-item" onclick="applySuggestion('Earned Leave', 'Annual earned leave', 21, '#28a745', false)">
+                            <div class="suggestion-color" style="background-color: #28a745;"></div>
+                            <div class="suggestion-content">
+                                <div class="fw-semibold">Earned Leave</div>
+                                <small class="text-muted">21 days/year</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="suggestion-item" onclick="applySuggestion('Maternity Leave', 'Maternity/Paternity leave', 90, '#6f42c1', true)">
+                            <div class="suggestion-color" style="background-color: #6f42c1;"></div>
+                            <div class="suggestion-content">
+                                <div class="fw-semibold">Maternity Leave</div>
+                                <small class="text-muted">90 days/year</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('leaveTypeForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const colorInput = document.getElementById('color_code');
+    
+    // Color preset selection
+    document.querySelectorAll('.color-preset').forEach(preset => {
+        preset.addEventListener('click', function() {
+            const color = this.dataset.color;
+            colorInput.value = color;
+            
+            // Visual feedback
+            document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('selected'));
+            this.classList.add('selected');
+        });
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (form.checkValidity()) {
+            submitBtn.querySelector('.btn-text').classList.add('d-none');
+            submitBtn.querySelector('.btn-loading').classList.remove('d-none');
+            submitBtn.disabled = true;
+            
+            // Add success animation
+            form.classList.add('animate__animated', 'animate__pulse');
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Add error animation
+            form.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                form.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Form validation with animations
+    const inputs = form.querySelectorAll('input, textarea, select');
+    inputs.forEach(input => {
+        input.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        input.addEventListener('focus', function() {
+            this.parentElement.classList.add('focused');
+        });
+    });
+    
+    function validateField(field) {
+        if (field.checkValidity()) {
+            field.classList.add('is-valid');
+            field.classList.remove('is-invalid');
+        } else {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+        }
+    }
+    
+    // Animate leave type cards
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.leave-type-card').forEach(card => {
+        observer.observe(card);
+    });
+});
+
+function applySuggestion(name, description, maxDays, color, requiresMedical) {
+    document.getElementById('name').value = name;
+    document.getElementById('description').value = description;
+    document.getElementById('max_days_per_year').value = maxDays;
+    document.getElementById('color_code').value = color;
+    document.getElementById('requires_medical_certificate').checked = requiresMedical;
+    document.getElementById('applicable_to_teaching').checked = true;
+    document.getElementById('applicable_to_non_teaching').checked = true;
+    
+    // Animate the form to show it's been filled
+    const form = document.getElementById('leaveTypeForm');
+    form.classList.add('animate__animated', 'animate__pulse');
+    setTimeout(() => {
+        form.classList.remove('animate__animated', 'animate__pulse');
+    }, 1000);
+    
+    // Update color preset selection
+    document.querySelectorAll('.color-preset').forEach(preset => {
+        preset.classList.remove('selected');
+        if (preset.dataset.color === color) {
+            preset.classList.add('selected');
+        }
+    });
+}
+
+function editLeaveType(leaveTypeId) {
+    // In a real implementation, this would populate the form with existing data
+    alert('Edit functionality would be implemented here');
+}
+
+function deleteLeaveType(leaveTypeId) {
+    if (confirm('Are you sure you want to delete this leave type? This action cannot be undone.')) {
+        // Simulate deletion
+        const card = document.querySelector(`[data-leave-type-id="${leaveTypeId}"]`);
+        card.classList.add('animate__animated', 'animate__fadeOut');
+        
+        setTimeout(() => {
+            card.remove();
+            
+            // Show success message
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success alert-dismissible fade show';
+            alert.innerHTML = `
+                <i class="fas fa-check-circle me-2"></i>
+                Leave type deleted successfully!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.querySelector('.container').insertBefore(alert, document.querySelector('.page-header'));
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }, 500);
+    }
+}
+</script>
+{% endblock %}

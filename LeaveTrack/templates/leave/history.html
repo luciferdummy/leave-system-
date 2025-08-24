@@ -1,0 +1,342 @@
+{% extends "base.html" %}
+
+{% block title %}Leave History - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="history-section">
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="page-header mb-4 animate__animated animate__fadeInDown">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="display-6 fw-bold mb-2">
+                        <i class="fas fa-history me-3"></i>Leave History
+                    </h1>
+                    <p class="text-muted mb-0">Track your leave applications and their status</p>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('leave.apply') }}" class="btn btn-primary animate-btn">
+                        <i class="fas fa-plus-circle me-2"></i>Apply for Leave
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-card mb-4 animate__animated animate__fadeInUp">
+            <div class="card-body">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label">Filter by Status</label>
+                        <select name="status" class="form-select" onchange="this.form.submit()">
+                            <option value="all" {{ 'selected' if status_filter == 'all' }}>All Applications</option>
+                            <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+                            <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
+                            <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+                            <option value="cancelled" {{ 'selected' if status_filter == 'cancelled' }}>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Quick Filters</label>
+                        <div class="btn-group w-100" role="group">
+                            <input type="radio" class="btn-check" name="quick_filter" id="all" value="all" {{ 'checked' if status_filter == 'all' }}>
+                            <label class="btn btn-outline-primary" for="all">All</label>
+                            
+                            <input type="radio" class="btn-check" name="quick_filter" id="recent" value="recent">
+                            <label class="btn btn-outline-primary" for="recent">Recent</label>
+                            
+                            <input type="radio" class="btn-check" name="quick_filter" id="this_year" value="this_year">
+                            <label class="btn btn-outline-primary" for="this_year">This Year</label>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button type="button" class="btn btn-outline-secondary w-100" onclick="exportHistory()">
+                            <i class="fas fa-download me-2"></i>Export History
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Applications List -->
+        <div class="applications-card animate__animated animate__fadeInUp">
+            {% if applications.items %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Leave Type</th>
+                                <th>Duration</th>
+                                <th>Total Days</th>
+                                <th>Status</th>
+                                <th>Applied On</th>
+                                <th>Approved By</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for application in applications.items %}
+                            <tr class="application-row animate-on-scroll" data-status="{{ application.status }}">
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="status-indicator me-2" style="background-color: {{ application.leave_type.color_code }};"></div>
+                                        <div>
+                                            <div class="fw-semibold">{{ application.leave_type.name }}</div>
+                                            {% if application.reason|length > 50 %}
+                                                <small class="text-muted">{{ application.reason[:50] }}...</small>
+                                            {% else %}
+                                                <small class="text-muted">{{ application.reason }}</small>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="date-range">
+                                        <div class="fw-semibold">{{ application.start_date.strftime('%b %d, %Y') }}</div>
+                                        <small class="text-muted">to {{ application.end_date.strftime('%b %d, %Y') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark fs-6">
+                                        {{ application.total_days }} days
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ application.status_color }} status-badge">
+                                        <i class="fas fa-{{ 'clock' if application.status == 'pending' else 'check' if application.status == 'approved' else 'times' if application.status == 'rejected' else 'ban' }}"></i>
+                                        {{ application.status|title }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="date-applied">
+                                        <div>{{ application.applied_at.strftime('%b %d, %Y') }}</div>
+                                        <small class="text-muted">{{ application.applied_at.strftime('%I:%M %p') }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if application.approver %}
+                                        <div class="approver-info">
+                                            <div class="fw-semibold">{{ application.approver.full_name }}</div>
+                                            <small class="text-muted">{{ application.approved_at.strftime('%b %d, %Y') if application.approved_at }}</small>
+                                        </div>
+                                    {% else %}
+                                        <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-primary" onclick="viewApplication({{ application.id }})" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if application.status == 'pending' %}
+                                            <a href="{{ url_for('leave.cancel', application_id=application.id) }}" 
+                                               class="btn btn-outline-danger" 
+                                               onclick="return confirm('Are you sure you want to cancel this application?')"
+                                               title="Cancel Application">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        {% endif %}
+                                        {% if application.status == 'approved' %}
+                                            <button class="btn btn-outline-secondary" onclick="printApplication({{ application.id }})" title="Print">
+                                                <i class="fas fa-print"></i>
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if applications.pages > 1 %}
+                <div class="pagination-container mt-4">
+                    <nav aria-label="Leave history pagination">
+                        <ul class="pagination justify-content-center">
+                            {% if applications.has_prev %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('leave.history', page=applications.prev_num, status=status_filter) }}">
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for page_num in applications.iter_pages() %}
+                                {% if page_num %}
+                                    {% if page_num != applications.page %}
+                                        <li class="page-item">
+                                            <a class="page-link" href="{{ url_for('leave.history', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                                        </li>
+                                    {% else %}
+                                        <li class="page-item active">
+                                            <span class="page-link">{{ page_num }}</span>
+                                        </li>
+                                    {% endif %}
+                                {% else %}
+                                    <li class="page-item disabled">
+                                        <span class="page-link">...</span>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if applications.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('leave.history', page=applications.next_num, status=status_filter) }}">
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+                {% endif %}
+            {% else %}
+                <div class="empty-state">
+                    <div class="text-center py-5">
+                        <i class="fas fa-calendar-times text-muted fa-4x mb-3"></i>
+                        <h5 class="text-muted">No Leave Applications Found</h5>
+                        {% if status_filter != 'all' %}
+                            <p class="text-muted">No {{ status_filter }} applications found. Try changing the filter.</p>
+                            <a href="{{ url_for('leave.history') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-filter me-2"></i>Clear Filters
+                            </a>
+                        {% else %}
+                            <p class="text-muted">You haven't submitted any leave applications yet.</p>
+                            <a href="{{ url_for('leave.apply') }}" class="btn btn-primary">
+                                <i class="fas fa-plus-circle me-2"></i>Apply for Leave
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Application Details Modal -->
+<div class="modal fade" id="applicationModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-alt me-2"></i>Application Details
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="applicationDetails">
+                <!-- Application details will be loaded here -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function viewApplication(applicationId) {
+    // Show loading state
+    const modal = new bootstrap.Modal(document.getElementById('applicationModal'));
+    const detailsContainer = document.getElementById('applicationDetails');
+    
+    detailsContainer.innerHTML = `
+        <div class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading application details...</p>
+        </div>
+    `;
+    
+    modal.show();
+    
+    // In a real application, this would fetch data from the server
+    setTimeout(() => {
+        detailsContainer.innerHTML = `
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Application Information</h6>
+                    <p><strong>Application ID:</strong> #${applicationId}</p>
+                    <p><strong>Status:</strong> <span class="badge bg-warning">Pending</span></p>
+                    <p><strong>Applied On:</strong> March 15, 2024</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Leave Details</h6>
+                    <p><strong>Leave Type:</strong> Sick Leave</p>
+                    <p><strong>Duration:</strong> 3 days</p>
+                    <p><strong>Dates:</strong> Mar 20 - Mar 22, 2024</p>
+                </div>
+            </div>
+            <hr>
+            <div>
+                <h6>Reason</h6>
+                <p>Medical treatment and recovery time needed.</p>
+            </div>
+        `;
+    }, 1000);
+}
+
+function printApplication(applicationId) {
+    window.open(`/leave/print/${applicationId}`, '_blank');
+}
+
+function exportHistory() {
+    // Create a simple CSV export
+    const table = document.querySelector('.table');
+    let csv = 'Leave Type,Start Date,End Date,Total Days,Status,Applied On\n';
+    
+    const rows = table.querySelectorAll('tbody tr');
+    rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        const rowData = [
+            cells[0].textContent.trim(),
+            cells[1].textContent.trim(),
+            cells[2].textContent.trim(),
+            cells[3].textContent.trim(),
+            cells[4].textContent.trim(),
+            cells[5].textContent.trim()
+        ];
+        csv += rowData.join(',') + '\n';
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'leave_history.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Animate table rows on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver(function(entries) {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+            }
+        });
+    }, observerOptions);
+    
+    document.querySelectorAll('.application-row').forEach(row => {
+        observer.observe(row);
+    });
+    
+    // Quick filter functionality
+    document.querySelectorAll('input[name="quick_filter"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.checked) {
+                const statusSelect = document.querySelector('select[name="status"]');
+                statusSelect.value = this.value;
+                statusSelect.form.submit();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

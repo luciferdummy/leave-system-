@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-section">
+    <div class="container py-4">
+        <!-- Admin Header -->
+        <div class="dashboard-header mb-4 animate__animated animate__fadeInDown">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="display-6 fw-bold mb-2">
+                        <i class="fas fa-tachometer-alt me-3"></i>Admin Dashboard
+                    </h1>
+                    <p class="text-muted mb-0">
+                        System overview and pending approvals
+                    </p>
+                </div>
+                <div class="col-auto">
+                    <div class="btn-group">
+                        <a href="{{ url_for('admin.users') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-users me-2"></i>Manage Users
+                        </a>
+                        <a href="{{ url_for('admin.leave_types') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-tags me-2"></i>Leave Types
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Statistics -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card animate__animated animate__fadeInUp">
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.total_staff }}</h3>
+                        <p class="stat-label">Total Staff</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+                    <div class="stat-icon bg-success">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.teaching_staff }}</h3>
+                        <p class="stat-label">Teaching Staff</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.2s;">
+                    <div class="stat-icon bg-info">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.non_teaching_staff }}</h3>
+                        <p class="stat-label">Non-Teaching Staff</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card animate__animated animate__fadeInUp" style="animation-delay: 0.3s;">
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number">{{ stats.pending_applications }}</h3>
+                        <p class="stat-label">Pending Approvals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leave Application Statistics -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-8">
+                <div class="dashboard-card animate__animated animate__fadeInLeft">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-chart-bar me-2"></i>Leave Application Statistics (This Year)
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-md-4">
+                                <div class="stat-item mb-3">
+                                    <div class="stat-number text-primary">{{ stats.total_applications }}</div>
+                                    <div class="stat-label">Total Applications</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item mb-3">
+                                    <div class="stat-number text-success">{{ stats.approved_applications }}</div>
+                                    <div class="stat-label">Approved</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="stat-item mb-3">
+                                    <div class="stat-number text-warning">{{ stats.pending_applications }}</div>
+                                    <div class="stat-label">Pending</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {% if stats.total_applications > 0 %}
+                        <div class="approval-rate-chart mt-4">
+                            <div class="progress" style="height: 20px;">
+                                <div class="progress-bar bg-success" 
+                                     style="width: {{ (stats.approved_applications / stats.total_applications * 100)|round(1) }}%">
+                                    {{ (stats.approved_applications / stats.total_applications * 100)|round(1) }}% Approved
+                                </div>
+                                <div class="progress-bar bg-warning" 
+                                     style="width: {{ (stats.pending_applications / stats.total_applications * 100)|round(1) }}%">
+                                    {{ (stats.pending_applications / stats.total_applications * 100)|round(1) }}% Pending
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4">
+                <div class="dashboard-card animate__animated animate__fadeInRight">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-bolt me-2"></i>Quick Actions
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            <a href="{{ url_for('leave.calendar_view') }}" class="btn btn-outline-primary">
+                                <i class="fas fa-calendar-alt me-2"></i>View Leave Calendar
+                            </a>
+                            <a href="{{ url_for('admin.users') }}" class="btn btn-outline-success">
+                                <i class="fas fa-user-plus me-2"></i>Manage Staff
+                            </a>
+                            <a href="{{ url_for('admin.leave_types') }}" class="btn btn-outline-info">
+                                <i class="fas fa-tags me-2"></i>Configure Leave Types
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Applications -->
+        <div class="row g-4 mb-4">
+            <div class="col-12">
+                <div class="dashboard-card animate__animated animate__fadeInUp">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="card-title">
+                            <i class="fas fa-exclamation-circle me-2"></i>Pending Applications
+                            {% if pending_applications %}
+                                <span class="badge bg-warning ms-2">{{ pending_applications|length }}</span>
+                            {% endif %}
+                        </h5>
+                        <div class="btn-group btn-group-sm">
+                            <button class="btn btn-outline-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        {% if pending_applications %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Employee</th>
+                                            <th>Department</th>
+                                            <th>Leave Type</th>
+                                            <th>Dates</th>
+                                            <th>Days</th>
+                                            <th>Applied On</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for application in pending_applications %}
+                                        <tr class="application-row animate-on-scroll">
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="user-avatar me-2">
+                                                        <i class="fas fa-user-circle fa-2x text-muted"></i>
+                                                    </div>
+                                                    <div>
+                                                        <div class="fw-semibold">{{ application.applicant.full_name }}</div>
+                                                        <small class="text-muted">{{ application.applicant.employee_id }}</small>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div>{{ application.applicant.department }}</div>
+                                                <small class="text-muted">{{ application.applicant.staff_type|title }}</small>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="status-indicator me-2" style="background-color: {{ application.leave_type.color_code }};"></div>
+                                                    {{ application.leave_type.name }}
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ application.start_date.strftime('%b %d') }} - 
+                                                {{ application.end_date.strftime('%b %d, %Y') }}
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-light text-dark">{{ application.total_days }} days</span>
+                                            </td>
+                                            <td>{{ application.applied_at.strftime('%b %d, %Y') }}</td>
+                                            <td>
+                                                <div class="btn-group btn-group-sm">
+                                                    <a href="{{ url_for('leave.approve', application_id=application.id) }}" 
+                                                       class="btn btn-outline-primary" 
+                                                       title="Review Application">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-check-circle text-success fa-4x mb-3"></i>
+                                <h5 class="text-muted">All Caught Up!</h5>
+                                <p class="text-muted">No pending applications to review.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activities -->
+        <div class="row">
+            <div class="col-12">
+                <div class="dashboard-card animate__animated animate__fadeInUp">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-history me-2"></i>Recent Activities
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        {% if recent_activities %}
+                            <div class="activity-timeline">
+                                {% for activity in recent_activities %}
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="fas fa-{{ 'user' if 'Login' in activity.action else 'file-alt' if 'Leave' in activity.action else 'cog' }}"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">{{ activity.action }}</div>
+                                        <div class="activity-meta">
+                                            <span class="text-muted">{{ activity.user.full_name }}</span>
+                                            <span class="text-muted ms-2">{{ activity.timestamp.strftime('%b %d, %Y at %I:%M %p') }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-4">
+                                <i class="fas fa-history text-muted fa-3x mb-3"></i>
+                                <p class="text-muted">No recent activities found.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Refresh button functionality
+    const refreshBtn = document.getElementById('refreshBtn');
+    if (refreshBtn) {
+        refreshBtn.addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-sync-alt fa-spin"></i>';
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        });
+    }
+    
+    // Auto-refresh pending applications every 30 seconds
+    setInterval(function() {
+        // Check for new pending applications
+        // This could be implemented with AJAX if needed
+    }, 30000);
+});
+</script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

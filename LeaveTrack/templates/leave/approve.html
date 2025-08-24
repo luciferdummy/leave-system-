@@ -1,0 +1,413 @@
+{% extends "base.html" %}
+
+{% block title %}Approve Leave Application - College Leave Management System{% endblock %}
+
+{% block content %}
+<div class="approve-section">
+    <div class="container py-4">
+        <!-- Header -->
+        <div class="page-header mb-4 animate__animated animate__fadeInDown">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h1 class="display-6 fw-bold mb-2">
+                        <i class="fas fa-gavel me-3"></i>Review Leave Application
+                    </h1>
+                    <p class="text-muted mb-0">Review and approve/reject leave application</p>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('dashboard.admin') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Application Details -->
+            <div class="col-lg-8">
+                <div class="application-card animate__animated animate__fadeInLeft">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-file-alt me-2"></i>Application Details
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Applicant Information -->
+                        <div class="applicant-info mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <label class="info-label">Applicant</label>
+                                        <div class="info-value">
+                                            <div class="d-flex align-items-center">
+                                                <div class="user-avatar me-3">
+                                                    <i class="fas fa-user-circle fa-3x text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">{{ application.applicant.full_name }}</h6>
+                                                    <p class="text-muted mb-0">{{ application.applicant.employee_id }}</p>
+                                                    <small class="text-muted">{{ application.applicant.designation }}</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <label class="info-label">Department</label>
+                                        <div class="info-value">
+                                            <span class="badge bg-light text-dark fs-6">{{ application.applicant.department }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="info-group mt-3">
+                                        <label class="info-label">Staff Type</label>
+                                        <div class="info-value">
+                                            <span class="badge bg-{{ 'primary' if application.applicant.staff_type == 'teaching' else 'info' }}">
+                                                {{ application.applicant.staff_type|title }} Staff
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Leave Details -->
+                        <div class="leave-details mb-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-calendar-alt me-2"></i>Leave Information
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <label class="info-label">Leave Type</label>
+                                        <div class="info-value">
+                                            <div class="d-flex align-items-center">
+                                                <div class="status-indicator me-2" style="background-color: {{ application.leave_type.color_code }};"></div>
+                                                {{ application.leave_type.name }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="info-group mt-3">
+                                        <label class="info-label">Duration</label>
+                                        <div class="info-value">
+                                            <span class="badge bg-light text-dark fs-6">{{ application.total_days }} working days</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="info-group">
+                                        <label class="info-label">Leave Dates</label>
+                                        <div class="info-value">
+                                            <div class="date-range-display">
+                                                <div class="date-item">
+                                                    <i class="fas fa-calendar-day me-2 text-success"></i>
+                                                    <strong>From:</strong> {{ application.start_date.strftime('%B %d, %Y') }}
+                                                </div>
+                                                <div class="date-item mt-1">
+                                                    <i class="fas fa-calendar-check me-2 text-danger"></i>
+                                                    <strong>To:</strong> {{ application.end_date.strftime('%B %d, %Y') }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Application Details -->
+                        <div class="application-details mb-4">
+                            <h6 class="mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Application Details
+                            </h6>
+                            
+                            <div class="info-group mb-3">
+                                <label class="info-label">Reason for Leave</label>
+                                <div class="info-value">
+                                    <div class="reason-box">
+                                        {{ application.reason }}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if application.contact_during_leave %}
+                                    <div class="info-group">
+                                        <label class="info-label">Contact During Leave</label>
+                                        <div class="info-value">
+                                            <i class="fas fa-phone me-2"></i>{{ application.contact_during_leave }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    {% if application.emergency_contact %}
+                                    <div class="info-group">
+                                        <label class="info-label">Emergency Contact</label>
+                                        <div class="info-value">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>{{ application.emergency_contact }}
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if application.medical_certificate_provided %}
+                            <div class="mt-3">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-file-medical me-2"></i>
+                                    Medical certificate has been provided with this application.
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <hr>
+
+                        <!-- Application Timeline -->
+                        <div class="application-timeline">
+                            <h6 class="mb-3">
+                                <i class="fas fa-clock me-2"></i>Application Timeline
+                            </h6>
+                            <div class="timeline">
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-primary">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6>Application Submitted</h6>
+                                        <p class="text-muted mb-0">{{ application.applied_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="timeline-item">
+                                    <div class="timeline-marker bg-warning">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <div class="timeline-content">
+                                        <h6>Under Review</h6>
+                                        <p class="text-muted mb-0">Currently being reviewed by admin</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approval Form -->
+            <div class="col-lg-4">
+                <div class="approval-form-card animate__animated animate__fadeInRight">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-gavel me-2"></i>Decision
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" id="approvalForm" class="needs-validation" novalidate>
+                            {{ form.hidden_tag() }}
+                            
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    <i class="fas fa-clipboard-check me-2"></i>Decision
+                                </label>
+                                {% for choice in form.status.choices %}
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="status" id="{{ choice[0] }}" value="{{ choice[0] }}" required>
+                                    <label class="form-check-label decision-option" for="{{ choice[0] }}">
+                                        <i class="fas fa-{{ 'check' if choice[0] == 'approved' else 'times' }} me-2"></i>
+                                        {{ choice[1] }}
+                                    </label>
+                                </div>
+                                {% endfor %}
+                                {% if form.status.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.status.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-floating mb-3">
+                                {{ form.comments(class="form-control", placeholder="Comments", style="height: 100px") }}
+                                <label for="{{ form.comments.id }}">
+                                    <i class="fas fa-comment-alt me-2"></i>Comments (Optional)
+                                </label>
+                                {% if form.comments.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.comments.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="form-floating mb-3" id="rejectionReasonGroup" style="display: none;">
+                                {{ form.rejection_reason(class="form-control", placeholder="Rejection Reason", style="height: 100px") }}
+                                <label for="{{ form.rejection_reason.id }}">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Rejection Reason (Required)
+                                </label>
+                                {% if form.rejection_reason.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.rejection_reason.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg animate-btn" id="submitBtn">
+                                    <span class="btn-text">
+                                        <i class="fas fa-gavel me-2"></i>Submit Decision
+                                    </span>
+                                    <span class="btn-loading d-none">
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                        Processing...
+                                    </span>
+                                </button>
+                                <a href="{{ url_for('dashboard.admin') }}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-arrow-left me-2"></i>Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Leave Balance Info -->
+                <div class="balance-info-card mt-4 animate__animated animate__fadeInRight" style="animation-delay: 0.2s;">
+                    <div class="card-header">
+                        <h6 class="card-title mb-0">
+                            <i class="fas fa-chart-pie me-2"></i>Leave Balance Info
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="balance-item">
+                            <div class="d-flex justify-content-between">
+                                <span>{{ application.leave_type.name }}</span>
+                                <span class="badge bg-light text-dark">Available</span>
+                            </div>
+                            <div class="progress mt-2" style="height: 6px;">
+                                <div class="progress-bar" style="width: 70%; background-color: {{ application.leave_type.color_code }};"></div>
+                            </div>
+                            <small class="text-muted">After approval: will consume {{ application.total_days }} days</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('approvalForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const statusRadios = document.querySelectorAll('input[name="status"]');
+    const rejectionReasonGroup = document.getElementById('rejectionReasonGroup');
+    const rejectionReasonField = document.getElementById('rejection_reason');
+    
+    // Handle status change
+    statusRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            if (this.value === 'rejected') {
+                rejectionReasonGroup.style.display = 'block';
+                rejectionReasonGroup.classList.add('animate__animated', 'animate__fadeInDown');
+                rejectionReasonField.required = true;
+            } else {
+                rejectionReasonGroup.style.display = 'none';
+                rejectionReasonField.required = false;
+                rejectionReasonField.value = '';
+            }
+            
+            // Update button style based on decision
+            updateButtonStyle(this.value);
+        });
+    });
+    
+    function updateButtonStyle(status) {
+        const btnText = submitBtn.querySelector('.btn-text');
+        
+        if (status === 'approved') {
+            submitBtn.className = 'btn btn-success btn-lg animate-btn';
+            btnText.innerHTML = '<i class="fas fa-check me-2"></i>Approve Application';
+        } else if (status === 'rejected') {
+            submitBtn.className = 'btn btn-danger btn-lg animate-btn';
+            btnText.innerHTML = '<i class="fas fa-times me-2"></i>Reject Application';
+        } else {
+            submitBtn.className = 'btn btn-primary btn-lg animate-btn';
+            btnText.innerHTML = '<i class="fas fa-gavel me-2"></i>Submit Decision';
+        }
+    }
+    
+    // Form submission
+    form.addEventListener('submit', function(e) {
+        if (form.checkValidity()) {
+            submitBtn.querySelector('.btn-text').classList.add('d-none');
+            submitBtn.querySelector('.btn-loading').classList.remove('d-none');
+            submitBtn.disabled = true;
+            
+            // Add processing animation
+            form.classList.add('animate__animated', 'animate__pulse');
+        } else {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Add error animation
+            form.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                form.classList.remove('animate__animated', 'animate__shakeX');
+            }, 1000);
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Add confirmation for rejection
+    form.addEventListener('submit', function(e) {
+        const selectedStatus = document.querySelector('input[name="status"]:checked');
+        if (selectedStatus && selectedStatus.value === 'rejected') {
+            if (!confirm('Are you sure you want to reject this leave application? This action cannot be undone.')) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Reset button state
+                submitBtn.querySelector('.btn-text').classList.remove('d-none');
+                submitBtn.querySelector('.btn-loading').classList.add('d-none');
+                submitBtn.disabled = false;
+            }
+        }
+    });
+    
+    // Character counter for comments and rejection reason
+    function addCharacterCounter(fieldId, maxLength = 500) {
+        const field = document.getElementById(fieldId);
+        const container = field.parentElement;
+        
+        field.addEventListener('input', function() {
+            const remaining = maxLength - this.value.length;
+            let counter = container.querySelector('.char-counter');
+            
+            if (!counter) {
+                counter = document.createElement('small');
+                counter.className = 'char-counter text-muted';
+                container.appendChild(counter);
+            }
+            
+            counter.textContent = `${remaining} characters remaining`;
+            counter.className = `char-counter ${remaining < 50 ? 'text-warning' : remaining < 20 ? 'text-danger' : 'text-muted'}`;
+        });
+    }
+    
+    addCharacterCounter('comments');
+    addCharacterCounter('rejection_reason');
+});
+</script>
+{% endblock %}
